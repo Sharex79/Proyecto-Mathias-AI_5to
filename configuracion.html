@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configuración</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Configuración</h1>
+  <div style="margin-top: 2rem;">
+    <!-- Botones de navegación -->
+    <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <button onclick="mostrarCambiarUsuario()" id="btnUsuario">Cambiar Usuario</button>
+      <button onclick="mostrarCambiarContrasena()" id="btnContrasena">Cambiar Contraseña</button>
+      <button onclick="volverAlInicio()" class="btn-danger">Volver</button>
+    </div>
+    <hr class="separator">
+
+    <!-- Sección Cambiar Usuario -->
+    <div id="seccionUsuario" style="display: none;">
+      <h2>Cambiar Usuario:</h2>
+      <div style="margin-bottom: 1rem;">
+        <label>Usuario anterior:</label>
+        <input type="text" id="usuarioAnterior" readonly style="background-color: #f5f5f5;">
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label>Nuevo usuario:</label>
+        <input type="text" id="nuevoUsuario" placeholder="Escribe el nuevo usuario">
+      </div>
+      <button onclick="confirmarCambioUsuario()">Cambiar Usuario</button>
+    </div>
+
+    <!-- Sección Cambiar Contraseña -->
+    <div id="seccionContrasena" style="display: none;">
+      <h2>Cambiar Contraseña:</h2>
+      <div style="margin-bottom: 1rem;">
+        <label>Contraseña anterior:</label>
+        <div class="password-container">
+          <input type="password" id="contrasenaAnterior" readonly style="padding-right: 30px; background-color: #f5f5f5;">
+          <span class="password-toggle" onclick="togglePassword('contrasenaAnterior', this)">👁️</span>
+        </div>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label>Nueva contraseña:</label>
+        <div class="password-container">
+          <input type="password" id="nuevaContrasena" placeholder="Escribe la nueva contraseña" style="padding-right: 30px;">
+          <span class="password-toggle" onclick="togglePassword('nuevaContrasena', this)">👁️</span>
+        </div>
+      </div>
+      <button onclick="confirmarCambioContrasena()">Cambiar Contraseña</button>
+    </div>
+
+  </div>
+  <script>
+    // Variables globales para almacenar el usuario y contraseña actuales
+    function cargarUsuarios() {
+      const raw = localStorage.getItem('usuarios');
+      try { return raw ? JSON.parse(raw) : []; } catch { return []; }
+    }
+    function guardarUsuarios(usuarios) {
+      localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    }
+    let usuarioSesion = localStorage.getItem('usuarioSesion') || 'admin';
+    let usuarios = cargarUsuarios();
+    let usuarioObj = usuarios.find(u => u.username === usuarioSesion) || { username: 'admin', password: '1234' };
+
+    // Cargar datos actuales al iniciar
+    document.getElementById('usuarioAnterior').value = usuarioObj.username;
+    document.getElementById('contrasenaAnterior').value = usuarioObj.password;
+
+    // Función para mostrar sección de cambiar usuario
+    function mostrarCambiarUsuario() {
+      document.getElementById('seccionUsuario').style.display = 'block';
+      document.getElementById('seccionContrasena').style.display = 'none';
+      
+      // Resaltar botón activo
+      document.getElementById('btnUsuario').style.backgroundColor = '#0d47a1';
+      document.getElementById('btnContrasena').style.backgroundColor = '#666';
+    }
+
+    // Función para mostrar sección de cambiar contraseña
+    function mostrarCambiarContrasena() {
+      document.getElementById('seccionUsuario').style.display = 'none';
+      document.getElementById('seccionContrasena').style.display = 'block';
+      
+      // Resaltar botón activo
+      document.getElementById('btnUsuario').style.backgroundColor = '#666';
+      document.getElementById('btnContrasena').style.backgroundColor = '#0d47a1';
+    }
+
+    // Mostrar sección de usuario por defecto
+    mostrarCambiarUsuario();
+
+    function confirmarCambioUsuario() {
+      const nuevoUsuario = document.getElementById('nuevoUsuario').value.trim();
+      if (!nuevoUsuario) {
+        alert('Por favor, escribe un nuevo usuario');
+        return;
+      }
+      
+      const confirmar = confirm('¿Estás seguro de que quieres cambiar el usuario?');
+      if (confirmar) {
+        // Actualizar en la lista de usuarios
+        const usuarios = cargarUsuarios();
+        const idx = usuarios.findIndex(u => u.username === usuarioSesion);
+        if (idx !== -1) {
+          usuarios[idx].username = nuevoUsuario;
+          guardarUsuarios(usuarios);
+          usuarioSesion = nuevoUsuario;
+          localStorage.setItem('usuarioSesion', usuarioSesion);
+        }
+        alert(`Usuario cambiado exitosamente a: ${nuevoUsuario}`);
+        
+        // Actualizar el campo de usuario anterior
+        document.getElementById('usuarioAnterior').value = nuevoUsuario;
+        document.getElementById('nuevoUsuario').value = '';
+      }
+    }
+
+    function confirmarCambioContrasena() {
+      const nuevaContrasena = document.getElementById('nuevaContrasena').value.trim();
+      if (!nuevaContrasena) {
+        alert('Por favor, escribe una nueva contraseña');
+        return;
+      }
+      
+      const confirmar = confirm('¿Estás seguro de que quieres cambiar la contraseña?');
+      if (confirmar) {
+        // Actualizar en la lista de usuarios
+        const usuarios = cargarUsuarios();
+        const idx = usuarios.findIndex(u => u.username === usuarioSesion);
+        if (idx !== -1) {
+          usuarios[idx].password = nuevaContrasena;
+          guardarUsuarios(usuarios);
+        }
+        alert(`Contraseña cambiada exitosamente`);
+        
+        // Actualizar el campo de contraseña anterior
+        document.getElementById('contrasenaAnterior').value = nuevaContrasena;
+        document.getElementById('nuevaContrasena').value = '';
+      }
+    }
+
+    function togglePassword(inputId, toggleElement) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        toggleElement.textContent = '👁️';
+      } else {
+        input.type = 'password';
+        toggleElement.textContent = '🙈';
+      }
+    }
+
+    function volverAlInicio() {
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'Inicio.html';
+      }, 500);
+    }
+  </script>
+</body>
+</html>

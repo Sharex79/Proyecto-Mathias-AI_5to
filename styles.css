@@ -1,0 +1,48 @@
+/* # Base - usado en todas las páginas */
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; opacity: 0; animation: fadeIn 0.3s ease-in forwards; }
+
+/* # Animaciones - usado en todas las páginas */
+.fade-out { animation: fadeOut 0.5s ease-out forwards; }
+.fade-in { animation: fadeIn 0.5s ease-in forwards; }
+@keyframes fadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+/* # Botones - usado en todas las páginas */
+button { padding: 0.6rem 1rem; cursor: pointer; background-color: #0d47a1; color: #ffffff; border: none; transition: transform 120ms ease, background-color 120ms ease; }
+button:hover { transform: scale(1.03); background-color: #1565c0; }
+.btn-danger { background-color: #c62828; }
+.btn-danger:hover { background-color: #e53935; transform: scale(1.03); }
+.btn-secondary { background-color: #666; }
+.btn-secondary:hover { background-color: #777; transform: scale(1.03); }
+
+/* # Formularios - principalmente login y crear-cuenta */
+form { display: grid; gap: 1rem; max-width: 320px; }
+label { display: block; margin-bottom: 0.25rem; }
+input { width: 100%; padding: 0.5rem; }
+
+/* # Login - estilos específicos */
+button.is-error { background-color: #c62828; }
+@keyframes shake {
+  0% { transform: translateX(0); }
+  15% { transform: translateX(-6px); }
+  30% { transform: translateX(6px); }
+  45% { transform: translateX(-5px); }
+  60% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+  90% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+.shake { animation: shake 0.4s ease-in-out; }
+
+/* # Configuración - campos de contraseña con icono de ojo */
+.password-container { position: relative; display: inline-block; }
+.password-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 16px; user-select: none; }
+
+/* # Separadores - configuración */
+.separator { border: 0; border-top: 3px solid #0d47a1; margin: 0 0 1.5rem 0; }
+
+/* # Inicio - botones en columna */
+.stacked-buttons { display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+.stacked-buttons button { width: 200px; }
+
+

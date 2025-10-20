@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acceso restringido</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1 id="saludo">Hola</h1>
+  <p>Introduce usuario y contraseña:</p>
+  <form>
+    <div>
+      <label for="usuario">Usuario</label>
+      <input id="usuario" name="usuario" type="text" autocomplete="username" />
+    </div>
+    <div>
+      <label for="contrasena">Contraseña</label>
+      <input id="contrasena" name="contrasena" type="password" autocomplete="current-password" />
+    </div>
+    <button type="submit" id="btnEntrar">Entrar</button>
+    <button type="button" onclick="crearCuenta()" style="margin-top: 0.5rem;">Crear cuenta</button>
+    <div id="mensajeError" style="margin-top: 1rem; color: #c62828; font-weight: bold; opacity: 0; transition: opacity 0.3s ease;"></div>
+  </form>
+  <script>
+    // Función para establecer el saludo según la hora
+    function establecerSaludo() {
+      const ahora = new Date();
+      const hora = ahora.getHours();
+      const minutos = ahora.getMinutes();
+      const tiempoActual = hora * 100 + minutos; // Convertir a formato HHMM
+      
+      let saludo;
+      if (tiempoActual >= 1901 || tiempoActual <= 300) {
+        saludo = 'Hola, Buenas noches.';
+      } else if (tiempoActual >= 301 && tiempoActual <= 1500) {
+        saludo = 'Hola, Buenos días.';
+      } else if (tiempoActual >= 1501 && tiempoActual <= 1900) {
+        saludo = 'Hola, Buenas tardes.';
+      }
+      
+      document.getElementById('saludo').textContent = saludo;
+    }
+
+    // Establecer saludo al cargar la página
+    establecerSaludo();
+
+    // Utilidades de usuarios en localStorage (lista)
+    function cargarUsuarios() {
+      const raw = localStorage.getItem('usuarios');
+      try { return raw ? JSON.parse(raw) : []; } catch { return []; }
+    }
+    function guardarUsuarios(usuarios) {
+      localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    }
+    // Asegurar usuario por defecto
+    (function seedDefault() {
+      const usuarios = cargarUsuarios();
+      if (!usuarios.find(u => u.username === 'admin')) {
+        usuarios.push({ username: 'admin', password: '1234' });
+        guardarUsuarios(usuarios);
+      }
+    })();
+
+    const form = document.querySelector('form');
+    const inputUsuario = document.getElementById('usuario');
+    const inputContrasena = document.getElementById('contrasena');
+    const btnEntrar = document.getElementById('btnEntrar');
+    const mensajeError = document.getElementById('mensajeError');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const usuario = (inputUsuario.value || '').trim();
+      const contrasena = (inputContrasena.value || '').trim();
+
+      const usuarios = cargarUsuarios();
+      const existe = usuarios.find(u => u.username === usuario && u.password === contrasena);
+
+      if (!usuario || !contrasena || !existe) {
+        btnEntrar.classList.add('is-error', 'shake');
+
+        setTimeout(() => {
+          btnEntrar.classList.remove('shake');
+        }, 450);
+
+        setTimeout(() => {
+          btnEntrar.classList.remove('is-error');
+        }, 2000);
+
+        // Mostrar mensaje de error
+        mensajeError.textContent = 'Usuario o contraseña incorrectos';
+        mensajeError.style.opacity = '1';
+
+        // Desvanecer el mensaje después de 1.7 segundos
+        setTimeout(() => {
+          mensajeError.style.opacity = '0';
+        }, 1700);
+
+        // Limpiar campos en caso de error
+        inputUsuario.value = '';
+        inputContrasena.value = '';
+        inputUsuario.focus();
+        return;
+      }
+      
+      // Guardar usuario en sesión y redirigir al Inicio
+      localStorage.setItem('usuarioSesion', usuario);
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'Inicio.html';
+      }, 500);
+    });
+
+    function crearCuenta() {
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'crear-cuenta.html';
+      }, 500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Creación de cuenta</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Creación de cuenta</h1>
+  <p>Introduce tu usuario y contraseña:</p>
+  <form>
+    <div>
+      <label for="nuevoUsuario">Usuario</label>
+      <input id="nuevoUsuario" name="nuevoUsuario" type="text" autocomplete="username" />
+    </div>
+    <div>
+      <label for="nuevaContrasena">Contraseña</label>
+      <input id="nuevaContrasena" name="nuevaContrasena" type="password" autocomplete="new-password" />
+    </div>
+    <button type="submit" id="btnCrear">Crear cuenta</button>
+    <div id="mensajeError" style="margin-top: 1rem; color: #c62828; font-weight: bold; opacity: 0; transition: opacity 0.3s ease;"></div>
+  </form>
+  <script>
+    const form = document.querySelector('form');
+    const inputUsuario = document.getElementById('nuevoUsuario');
+    const inputContrasena = document.getElementById('nuevaContrasena');
+    const btnCrear = document.getElementById('btnCrear');
+    const mensajeError = document.getElementById('mensajeError');
+
+    function cargarUsuarios() {
+      const raw = localStorage.getItem('usuarios');
+      try { return raw ? JSON.parse(raw) : []; } catch { return []; }
+    }
+    function guardarUsuarios(usuarios) {
+      localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    }
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const usuario = (inputUsuario.value || '').trim();
+      const contrasena = (inputContrasena.value || '').trim();
+
+      if (!usuario || !contrasena) {
+        mensajeError.textContent = 'Por favor, completa todos los campos';
+        mensajeError.style.opacity = '1';
+
+        setTimeout(() => {
+          mensajeError.style.opacity = '0';
+        }, 2000);
+        return;
+      }
+
+      // Añadir o actualizar usuario en la lista
+      const usuarios = cargarUsuarios();
+      const existente = usuarios.find(u => u.username === usuario);
+      if (existente) {
+        existente.password = contrasena;
+      } else {
+        usuarios.push({ username: usuario, password: contrasena });
+      }
+      guardarUsuarios(usuarios);
+
+      // Mostrar mensaje de éxito
+      mensajeError.textContent = 'Cuenta creada exitosamente';
+      mensajeError.style.color = '#2e7d32';
+      mensajeError.style.opacity = '1';
+
+      // Redirigir al login después de 1.5 segundos
+      setTimeout(() => {
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 500);
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

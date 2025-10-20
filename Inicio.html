@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inicio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1 id="saludoUsuario">Bienvenido</h1>
+  <div class="stacked-buttons" style="margin-top: 2rem;">
+    <button onclick="irAConfiguracion()">Configuración</button>
+    <button onclick="cerrarSesion()" class="btn-danger">Cerrar sesión</button>
+  </div>
+  <script>
+    // Variables globales para almacenar el usuario y contraseña actuales
+    function cargarUsuarios() {
+      const raw = localStorage.getItem('usuarios');
+      try { return raw ? JSON.parse(raw) : []; } catch { return []; }
+    }
+    const usuarioSesion = localStorage.getItem('usuarioSesion') || 'admin';
+
+    // Establecer el saludo con el usuario actual
+    document.getElementById('saludoUsuario').textContent = `Bienvenido, ${usuarioSesion}`;
+
+    function irAConfiguracion() {
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'configuracion.html';
+      }, 500);
+    }
+
+    function cerrarSesion() {
+      // Redirigir al login
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 500);
+    }
+  </script>
+</body>
+</html>
